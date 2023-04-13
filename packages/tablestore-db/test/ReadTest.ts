@@ -26,6 +26,36 @@ describe("read test", function (this: Suite): void {
                         sums.push(...slices);
                     });
                 });
+
+                expectError("ResourceNotFoundException", async () => {
+                    await appStateDaySum.get.colume("teamId").equals("xxxxxxxx")
+                    .and.colume("appUUID").equals("xxxxx")
+                    .and.colume("timestamp").greaterOrEqualsThan(1672531200000)
+                    .and.colume("timestamp").lessThan(1675119999999)
+                    .slices(10000).resultSlices(async (slices) => {
+                        sums.push(...slices);
+                    });
+                });
+
+                expectError("ResourceNotFoundException", async () => {
+                    await appStateDaySum.get.colume("teamId").equals("xxxxxxxx")
+                    .and.colume("appUUID").equals("xxxxx")
+                    .and.colume("timestamp").greaterThan(1672531200000)
+                    .and.colume("timestamp").lessOrEqualsThan(1675119999999)
+                    .slices(10000).resultSlices(async (slices) => {
+                        sums.push(...slices);
+                    });
+                });
+
+                expectError("ResourceNotFoundException", async () => {
+                    await appStateDaySum.get.colume("teamId").equals("xxxxxxxx")
+                    .and.colume("appUUID").equals("xxxxx")
+                    .and.colume("timestamp").greaterThan(1672531200000)
+                    .and.colume("timestamp").lessThan(1675119999999)
+                    .slices(10000).resultSlices(async (slices) => {
+                        sums.push(...slices);
+                    });
+                });
             });
             it(`test one pk ${name}`, async (): Promise<void> => {
                 if (name !== "dynamodb") {
