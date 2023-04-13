@@ -135,8 +135,7 @@ const modeDefinition: TableStoreModelDefinition<TestModels> = {
 config();
 
 for (const requiredKey of [
-    "TABLESTORE_AK", "TABLESTORE_SK", "TABLESTORE_INSTANCENAME", "TABLESTORE_ENDPOINT",
-    "DYNAMODB_AK", "DYNAMODB_SK", "DYNAMODB_REGION"]) {
+    "TABLESTORE_AK", "TABLESTORE_SK", "TABLESTORE_INSTANCENAME", "TABLESTORE_ENDPOINT",]) {
     if (!(requiredKey in process.env)) {
         throw new Error(`need define process.env.${requiredKey}`);
     }
@@ -150,13 +149,8 @@ const db: Database<TestModels> = new Database(new DatabaseAdapterFactory<TestMod
 }));
 
 const db2: Database<TestModels> = new Database(new DatabaseAdapterFactory<TestModels>(modeDefinition).create({
-    dynamodb: {
-        region: process.env.DYNAMODB_REGION!,
-        credentials: {
-            accessKeyId: process.env.DYNAMODB_AK!,
-            secretAccessKey: process.env.DYNAMODB_SK!,
-        },
-    },
+    // will load from ~/.aws/credentials and ~/.aws/config。just keep dynamodb field is ok
+    dynamodb: {},
 }));
 
 export const databaseSet = { tablestore: db, dynamodb: db2 };
