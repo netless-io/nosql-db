@@ -161,12 +161,14 @@ function generateConditionExpression<MODEL extends { [key: string]: any }>(
         conditionExpression: string;
         names: QueryCommandInput["ExpressionAttributeNames"];
         values: QueryCommandInput["ExpressionAttributeValues"];
+        filterExpression?: QueryCommandInput["FilterExpression"];
     } {
 
     const q: {
         conditionExpression: string;
         names: QueryCommandInput["ExpressionAttributeNames"];
         values: QueryCommandInput["ExpressionAttributeValues"];
+        filterExpression?: QueryCommandInput["FilterExpression"];
     } = {
         conditionExpression: "",
         names: {},
@@ -226,10 +228,18 @@ function generateConditionExpression<MODEL extends { [key: string]: any }>(
     }
     let append = "";
     if (start && end && start !== end) {
-        append = `#${ref} ${bigThan} :${ref}start AND #${ref} ${smallThan} :${ref}end`;
+        // FIXME: 如果是作为 key condition 时，有两个 condition， dynamo 服务器会返回 KeyConditionExpressions must only contain one condition per key 报错，这里暂时用 filter 做了处理
+        append = `#${ref} BETWEEN :${ref}start AND :${ref}end`;
         q.names![`#${ref}`] = key;
         q.values![`:${ref}start`] = tableStoreValueToDynamoAttr(start, struct);
         q.values![`:${ref}end`] = tableStoreValueToDynamoAttr(end, struct);
+        if (bigThan == ">") {
+            const filterStart = `#${ref} > :${ref}start`;
+            q.filterExpression = q.filterExpression ? `${q.filterExpression} AND ${filterStart}` : `${filterStart}`;
+        } else if (smallThan == "<") {
+            const filterEnd = `#${ref} < :${ref}end`;
+            q.filterExpression = q.filterExpression ? `${q.filterExpression} AND ${filterEnd}` : `${filterEnd}`;
+        }
     } else if (start && end) {
         append = `#${ref} = :${ref}start`;
         q.names![`#${ref}`] = key;
@@ -317,10 +327,13 @@ export function parseConditionsToRangeCommand<MODEL extends { [key: string]: any
             const keyConditions = sortedConditions[key];
             // conditions 可能不包含所有 key
             if (keyConditions) {
-                const { conditionExpression, names, values } = generateConditionExpression(key, alphabet.pop()!, struct, keyConditions);
+                const { conditionExpression, names, values, filterExpression } = generateConditionExpression(key, alphabet.pop()!, struct, keyConditions);
                 q.ExpressionAttributeNames = { ...q.ExpressionAttributeNames, ...names };
                 q.ExpressionAttributeValues = { ...q.ExpressionAttributeValues, ...values };
                 q.FilterExpression = q.FilterExpression ? `${q.FilterExpression} AND ${conditionExpression}` : conditionExpression;
+                if (filterExpression) {
+                    q.FilterExpression = q.FilterExpression ? `${q.FilterExpression} AND ${filterExpression}` : filterExpression;
+                }
             }
         }
 
@@ -384,10 +397,14 @@ export function parseConditionsToRangeCommand<MODEL extends { [key: string]: any
         const struct = keyInfo.valueNode[keyInfo.rangeKey]!;
         const keyConditions = sortedConditions[rangeKey];
         if (keyConditions) {
-            const { conditionExpression, names, values } = generateConditionExpression(rangeKey, rangeKey, struct, keyConditions);
+            const { conditionExpression, names, values, filterExpression } = generateConditionExpression(rangeKey, rangeKey, struct, keyConditions);
             q.ExpressionAttributeNames = { ...q.ExpressionAttributeNames, ...names };
             q.ExpressionAttributeValues = { ...q.ExpressionAttributeValues, ...values };
             q.KeyConditionExpression = `${q.KeyConditionExpression} AND ${conditionExpression}`;
+            if (filterExpression) {
+                // dynamo db 限制，这里只是提前报错告知
+                throw new Error(`Filter Expression can only contain non-primary key attributes : ${filterExpression}`);
+            }
         }
         sortedConditionsCount -= 1;
     }
@@ -400,10 +417,13 @@ export function parseConditionsToRangeCommand<MODEL extends { [key: string]: any
         for (const key of restPrimaryKeys) {
             const struct = keyInfo.valueNode[key as keyof MODEL]!;
             const keyConditions = sortedConditions[key];
-            const { conditionExpression, names, values } = generateConditionExpression(key, alphabet.pop()!, struct, keyConditions);
+            const { conditionExpression, names, values, filterExpression } = generateConditionExpression(key, alphabet.pop()!, struct, keyConditions);
             q.ExpressionAttributeNames = { ...q.ExpressionAttributeNames, ...names };
             q.ExpressionAttributeValues = { ...q.ExpressionAttributeValues, ...values };
             q.FilterExpression = q.FilterExpression ? `${q.FilterExpression} AND ${conditionExpression}` : conditionExpression;
+            if (filterExpression) {
+                q.FilterExpression = q.FilterExpression ? `${q.FilterExpression} AND ${filterExpression}` : filterExpression;
+            }
         }
     }
 
