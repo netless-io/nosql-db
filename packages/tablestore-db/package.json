@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.188.0",
-    "dictionary-db": "workspace:*",
+    "@netless-io/dictionary-db": "workspace:*",
     "tablestore": "^5.0.6"
   },
   "devDependencies": {
