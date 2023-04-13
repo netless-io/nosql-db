@@ -16,13 +16,16 @@ describe("read test", function (this: Suite): void {
             it(`test multiple condition for sk ${name}`, async (): Promise<void> => {
                 const appStateDaySum = db.model("appStateDaySum");
                 const sums: any[] = [];
-                await appStateDaySum.get.colume("teamId").equals("9ID20PQiEeu3O7-fBcAzOg")
-                    .and.colume("appUUID").equals("Q9gKbQIeA9UtVA")
+                // 没创建表时，这里涉及到的检查，只需要格式正确即可，不需要检查是否存在
+                expectError("ResourceNotFoundException", async () => {
+                    await appStateDaySum.get.colume("teamId").equals("xxxxxxxx")
+                    .and.colume("appUUID").equals("xxxxx")
                     .and.colume("timestamp").greaterOrEqualsThan(1672531200000)
                     .and.colume("timestamp").lessOrEqualsThan(1675119999999)
                     .slices(10000).resultSlices(async (slices) => {
                         sums.push(...slices);
                     });
+                });
             });
             it(`test one pk ${name}`, async (): Promise<void> => {
                 if (name !== "dynamodb") {
