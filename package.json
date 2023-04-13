@@ -1,8 +1,9 @@
 {
-    "name": "dictionary-db",
+    "name": "@netless-io/nosql-db",
     "license": "MIT",
+    "private": true,
     "author": "Tao Zeyu <i@taozeyu>",
-    "repository": "git@github.com:Moskize91/dictionary-db.git",
+    "repository": "git@github.com:netless-io/nosql-db.git",
     "scripts": {
         "build": "pnpm -r build",
         "test": "pnpm -r test"
