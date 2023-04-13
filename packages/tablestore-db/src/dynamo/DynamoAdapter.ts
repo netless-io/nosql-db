@@ -421,16 +421,29 @@ export class DynamoAdapter<MODELS extends { [key: string]: { [key: string]: any 
 
     // eslint-disable-next-line max-len
     private getItems(command: QueryCommand | ScanCommand): Promise<null | QueryCommandOutput & { Items: NonNullable<QueryCommandOutput["Items"]> }> {
-        return new Promise((resolve, reject) => {
-            this.client.send(command, (err: any, data: QueryCommandOutput) => {
-                if (err) {
-                    reject(err);
-                } else if (hasItemsOutput(data)) {
-                    resolve(data);
+        return new Promise(async (resolve, reject) => {
+            try {
+                const items: NonNullable<QueryCommandOutput["Items"]> = [];
+                let result = await this.client.send(command);
+                result.Items && items.push(...result.Items);
+                while (result.LastEvaluatedKey && (command.input.Limit === undefined || (items.length < command.input.Limit))) {
+                    command.input.ExclusiveStartKey = result.LastEvaluatedKey;
+                    result = await this.client.send(command);
+                    result.Items && items.push(...result.Items);
+                }
+
+                if (items.length > 0) {
+                    resolve({
+                        ...result,
+                        Items: items,
+                    });
                 } else {
                     resolve(null);
                 }
-            });
+                
+            } catch (error) {
+                reject(error);
+            }
         });
     }
 
