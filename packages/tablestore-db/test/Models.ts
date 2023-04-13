@@ -10,8 +10,16 @@ export type TestModels = {
     readonly accessKeys: AccessKeyModel;
     readonly roomStates: RoomStatesModel;
     readonly sliceBegins: SliceBeginModel;
+    readonly appStateDaySum: AppStateDaySum;
 };
 
+export type AppStateDaySum = {
+    readonly teamId: string;
+    readonly appUUID: string;
+    readonly timestamp: number;
+    readonly peakSessionsCount: number;
+    readonly peakWritersCount: number;
+};
 export type RoomModel = {
     readonly uuid: string;
     readonly akkoVersion: string;
@@ -130,16 +138,27 @@ const modeDefinition: TableStoreModelDefinition<TestModels> = {
         },
         columes: {},
     },
+    "appStateDaySum": {
+        keys: {
+            "teamId": TableStoreType.string,
+            "appUUID": TableStoreType.string,
+            "timestamp": TableStoreType.integer,
+        },
+        columes: {
+            "peakSessionsCount": TableStoreType.integer,
+            "peakWritersCount": TableStoreType.integer,
+        },
+    },
 };
 
 config();
 
-for (const requiredKey of [
-    "TABLESTORE_AK", "TABLESTORE_SK", "TABLESTORE_INSTANCENAME", "TABLESTORE_ENDPOINT",]) {
-    if (!(requiredKey in process.env)) {
-        throw new Error(`need define process.env.${requiredKey}`);
-    }
-}
+// for (const requiredKey of [
+//     "TABLESTORE_AK", "TABLESTORE_SK", "TABLESTORE_INSTANCENAME", "TABLESTORE_ENDPOINT",]) {
+//     if (!(requiredKey in process.env)) {
+//         throw new Error(`need define process.env.${requiredKey}`);
+//     }
+// }
 
 const db: Database<TestModels> = new Database(new DatabaseAdapterFactory<TestModels>(modeDefinition).create({
     accessKeyId: process.env.TABLESTORE_AK!,
@@ -153,4 +172,4 @@ const db2: Database<TestModels> = new Database(new DatabaseAdapterFactory<TestMo
     dynamodb: {},
 }));
 
-export const databaseSet = { tablestore: db, dynamodb: db2 };
+export const databaseSet = { dynamodb: db2 };

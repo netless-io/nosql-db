@@ -12,6 +12,18 @@ describe("read test", function (this: Suite): void {
     this.timeout(10 * 60 * 1000);
     describe("different db", (): void => {
         for (const [name, db] of Object.entries(databaseSet)) {
+            // dynamodb 不支持 sk 多条件查询，>= 和 <= 同时存在时，可以暂时使用 between 替代。
+            it(`test multiple condition for sk ${name}`, async (): Promise<void> => {
+                const appStateDaySum = db.model("appStateDaySum");
+                const sums: any[] = [];
+                await appStateDaySum.get.colume("teamId").equals("9ID20PQiEeu3O7-fBcAzOg")
+                    .and.colume("appUUID").equals("Q9gKbQIeA9UtVA")
+                    .and.colume("timestamp").greaterOrEqualsThan(1672531200000)
+                    .and.colume("timestamp").lessOrEqualsThan(1675119999999)
+                    .slices(10000).resultSlices(async (slices) => {
+                        sums.push(...slices);
+                    });
+            });
             it(`test one pk ${name}`, async (): Promise<void> => {
                 if (name !== "dynamodb") {
                     return;
@@ -23,26 +35,6 @@ describe("read test", function (this: Suite): void {
                     expect(error.name && error.name).equals("ResourceNotFoundException");
                 }
             });
-            // it(`read ${name}`, async (): Promise<void> => {
-            //     if (name !== "dynamodb") {
-            //         return;
-            //     }
-            //     const beginTime2 = 1668988800000;
-            //     const endTime2 = 1668988900000;
-            //     const teamsSet: any = {};
-            //     const appsSet: any = {};
-            //     const roomsSet: any = {};
-            //     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-            //     const iterateSlices = async (slices: any) => {
-            //         for (const { teamId, appUUID, uuid } of slices) {
-            //             teamsSet[teamId] = true;
-            //             roomsSet[uuid] = true;
-            //             appsSet[`${teamId}/${appUUID}`] = true;
-            //         }
-            //     };
-            //     await db.model("roomStates").get.colume("timestamp").greaterOrEqualsThan(beginTime2)
-            //                 .and.colume("timestamp").lessThan(endTime2 + 1).resultSlices(iterateSlices);
-            // });
             it(`get results basic in ${name}`, async () => {
                 const snapshotDB = db.model("snapshots");
                 const snapshotModel = {
