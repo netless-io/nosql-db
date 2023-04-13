@@ -2,9 +2,17 @@
 
 ![main](https://github.com/moskize91/dictionary-db/actions/workflows/build-and-test.yml/badge.svg?branch=main)
 
-## 安装
+## 开发
 
-你需要安装 ``dictionary-db`` 和 ``tablestore-dictionary-db`` 两个项目。前者是接口，后者是实现。
+```shell
+pnpm install
+# 开发 tablestore-db 需要依赖 dictionary-db，需要先在根目录执行 build
+pnpm build
+```
+
+## 已知问题
+
+colume 为错误书写，由于项目兼容问题，暂时不修改。
 
 ## 定义数据结构
 
