@@ -1,6 +1,6 @@
 /* eslint-disable prefer-destructuring */
 import type { AttributeValue } from "@aws-sdk/client-dynamodb";
-import type { Condition, Conditions } from "dictionary-db";
+import type { Condition, Conditions } from "@netless/dictionary-db";
 import { conditionsToString } from "../ConditionPrinter";
 import { tableStoreValueToDynamoAttr } from "./DynamoTransfer";
 import type { TableStoreModel, TableStoreTypeNode } from "../TableStoreType";

@@ -1,4 +1,4 @@
-import type { DatabaseAdapter } from "dictionary-db";
+import type { DatabaseAdapter } from "@netless/dictionary-db";
 import type { DynamoOptions } from "./dynamo";
 import type { TableStoreModelDefinition } from "./TableStoreType";
 import { TablestoreAdapterFactory } from "./tablestore";

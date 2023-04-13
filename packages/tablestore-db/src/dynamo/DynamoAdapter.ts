@@ -1,4 +1,4 @@
-import type { DatabaseAdapter, GetDescription, Conditions, ModelDefinition, PropertyDefinition } from "dictionary-db";
+import type { DatabaseAdapter, GetDescription, Conditions, ModelDefinition, PropertyDefinition } from "@netless/dictionary-db";
 import type { AttributeValue,
               DeleteItemCommandInput,
               DynamoDBClient,

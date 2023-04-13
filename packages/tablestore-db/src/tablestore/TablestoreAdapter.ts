@@ -1,6 +1,6 @@
 import TableStore from "tablestore";
 
-import type { DatabaseAdapter, GetDescription, Conditions, ModelDefinition, PropertyDefinition } from "dictionary-db";
+import type { DatabaseAdapter, GetDescription, Conditions, ModelDefinition, PropertyDefinition } from "@netless/dictionary-db";
 import type { PrimaryKeyRange } from "./TableStoreParser";
 import type { TableStoreModelDefinition } from "../TableStoreType";
 import type { KeysDescription } from "./ModelNode";

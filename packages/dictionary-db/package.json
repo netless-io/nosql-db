@@ -1,5 +1,5 @@
 {
-  "name": "@netless-io/dictionary-db",
+  "name": "@netless/dictionary-db",
   "version": "0.0.2",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.mjs",

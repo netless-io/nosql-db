@@ -1,4 +1,4 @@
-import type { Condition, Conditions } from "dictionary-db";
+import type { Condition, Conditions } from "@netless/dictionary-db";
 import type {
     AttributeValue,
     DeleteItemCommandInput,

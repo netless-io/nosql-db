@@ -52,7 +52,7 @@ export const adapterFactory = new TablestoreAdapterFactory<MyModels>({
 有了适配器，就可以构造 ``Database`` 实例了。
 
 ```typescript
-import { Database } from "dictionary-db";
+import { Database } from "@netless/dictionary-db";
 
 const db = new Database(adapterFactory.create({
     accessKeyId: "***",

@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import { Database } from "dictionary-db";
+import { Database } from "@netless/dictionary-db";
 import type { TableStoreModelDefinition } from "../src/index";
 import { DatabaseAdapterFactory, TableStoreType } from "../src/index";
 

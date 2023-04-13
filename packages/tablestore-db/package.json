@@ -1,5 +1,5 @@
 {
-  "name": "@netless-io/tablestore-dictionary-db",
+  "name": "@netless/tablestore-dictionary-db",
   "version": "0.0.2",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.mjs",
@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.188.0",
-    "@netless-io/dictionary-db": "workspace:*",
+    "@netless/dictionary-db": "workspace:*",
     "tablestore": "^5.0.6"
   },
   "devDependencies": {

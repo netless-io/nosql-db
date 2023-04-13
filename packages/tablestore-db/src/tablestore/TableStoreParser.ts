@@ -1,6 +1,6 @@
 import TableStore from "tablestore";
 
-import type { Condition, Conditions } from "dictionary-db";
+import type { Condition, Conditions } from "@netless/dictionary-db";
 import type { TableStoreModel, TableStoreTypeNode } from "../TableStoreType";
 import type { KeysDescription } from "./ModelNode";
 import { conditionsToString } from "../ConditionPrinter";

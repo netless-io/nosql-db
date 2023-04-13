@@ -21,7 +21,7 @@ async function build() {
         minify: false,
         plugins: [nodeExternalsPlugin({
             packagePath: resolve(packagePath, "./package.json"),
-            allowList: ["dictionary-db"],
+            allowList: ["@netless/dictionary-db"],
         })],
     });
 }

@@ -1,4 +1,4 @@
-import type { Condition } from "dictionary-db";
+import type { Condition } from "@netless/dictionary-db";
 
 export function conditionsToString<T extends Record<string, any>>(orConditions: ReadonlyArray<ReadonlyArray<Condition<T, keyof T>>>): string {
     const orStrings: string[] = [];
