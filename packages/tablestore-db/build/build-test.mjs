@@ -18,7 +18,7 @@ async function build() {
         target: ["es2017", "node16"],
         sourcemap: true,
         bundle: true,
-        minify: true,
+        minify: false,
         plugins: [nodeExternalsPlugin({
             packagePath: resolve(packagePath, "./package.json"),
             allowList: ["dictionary-db"],

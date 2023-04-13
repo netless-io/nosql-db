@@ -9,8 +9,12 @@ pnpm build
 
 ## 测试
 
-根据情况，注释 `packages/tablestore-db/test/Models.ts` 的数据库。
-同时在该文件中，写好测试数据数据库 schema。
+根据情况，选择性注释 `packages/tablestore-db/test/Models.ts` 的数据库。
+测试文件中数据数据库 schema，需要在特定的账号和集群中使用。
+如果是 netless 开发人员：
+    1. tablestore 可以在阿里云的测试账号中使用，region 为 cn-hangzhou。
+    2. dynamodb 可以在 netless 测试账号中使用，region 为 ap-northeast-1。
+这里缺少表结构的创建脚本，所以测试代码，并不通用，外部使用需要自己创建。
 
 测试阿里云 tablestore 数据库需要配置以下环境变量
 ```shell
