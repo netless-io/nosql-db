@@ -144,7 +144,8 @@ export class DynamoTable<MODEL extends { [key: string]: any }> {
         });
         return {
             tableName: name,
-            indexName: [combineHashKey.slice(0, 2), rangeKey].join(splitKey),
+            // [[a, b], c].join("/") 变成这样 a,b/c
+            indexName: [...combineHashKey.slice(0, 2), rangeKey].join(splitKey),
             isGsi: true,
             isIndex: false,
             hashKey: combineHashKey.slice(0, 2).join(splitKey),
