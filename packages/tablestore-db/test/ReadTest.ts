@@ -17,7 +17,7 @@ describe("read test", function (this: Suite): void {
                 const appStateDaySum = db.model("appStateDaySum");
                 const sums: any[] = [];
                 // 没创建表时，这里涉及到的检查，只需要格式正确即可，不需要检查是否存在
-                expectError("ResourceNotFoundException", async () => {
+                await expectError("ResourceNotFoundException", async () => {
                     await appStateDaySum.get.colume("teamId").equals("xxxxxxxx")
                     .and.colume("appUUID").equals("xxxxx")
                     .and.colume("timestamp").greaterOrEqualsThan(1672531200000)
@@ -27,7 +27,7 @@ describe("read test", function (this: Suite): void {
                     });
                 });
 
-                expectError("ResourceNotFoundException", async () => {
+                await expectError("ResourceNotFoundException", async () => {
                     await appStateDaySum.get.colume("teamId").equals("xxxxxxxx")
                     .and.colume("appUUID").equals("xxxxx")
                     .and.colume("timestamp").greaterOrEqualsThan(1672531200000)
@@ -37,7 +37,7 @@ describe("read test", function (this: Suite): void {
                     });
                 });
 
-                expectError("ResourceNotFoundException", async () => {
+                await expectError("ResourceNotFoundException", async () => {
                     await appStateDaySum.get.colume("teamId").equals("xxxxxxxx")
                     .and.colume("appUUID").equals("xxxxx")
                     .and.colume("timestamp").greaterThan(1672531200000)
