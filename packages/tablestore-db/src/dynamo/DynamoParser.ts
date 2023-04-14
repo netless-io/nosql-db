@@ -235,24 +235,34 @@ function generateConditionExpression<MODEL extends { [key: string]: any }>(
         q.values![`:${ref}start`] = tableStoreValueToDynamoAttr(start, struct);
         q.values![`:${ref}end`] = tableStoreValueToDynamoAttr(end, struct);
 
-        // FIXME: 如果是作为 key condition 时，有两个 condition， dynamo 服务器会返回 KeyConditionExpressions must only contain one condition per key 报错，这里暂时用 filter 做了处理
+        // 如果是作为 key condition，不允许有多个条件语句，需要更改为 Between（包含两端），需要修改 start 和 end 的值
         {
             const keyExpression = `#${ref} BETWEEN :${ref}start AND :${ref}end`;
             if (bigThan === ">") {
-                start = start + 1;
+                if (typeof start === "number") {
+                    start = start + 1;
+                } else {
+                    throw new Error(`only number support > for ${key}`);
+                }
                 q.keyExpression = keyExpression;
             }
             if (smallThan === "<") {
-                end = end - 1;
+                if (typeof end === "number") {
+                    end = end - 1;
+                } else {
+                    throw new Error(`only number support < for ${key}`);
+                }
                 q.keyExpression = keyExpression;
             }
 
-            if (keyExpression) {
+            // 有代表需要修改 start 或者 end 的值
+            if (q.keyExpression) {
                 q.keyValues = {
                     [`:${ref}start`]: tableStoreValueToDynamoAttr(start, struct),
                     [`:${ref}end`]: tableStoreValueToDynamoAttr(end, struct),
                 };
             }
+            q.keyExpression = keyExpression;
         }
 
     } else if (start && end) {
@@ -412,17 +422,12 @@ export function parseConditionsToRangeCommand<MODEL extends { [key: string]: any
             const { conditionExpression, names, values, keyExpression, keyValues } = generateConditionExpression(rangeKey, rangeKey, struct, keyConditions);
             q.ExpressionAttributeNames = { ...q.ExpressionAttributeNames, ...names };
             q.ExpressionAttributeValues = { ...q.ExpressionAttributeValues, ...values };
-            q.KeyConditionExpression = `${q.KeyConditionExpression} AND ${conditionExpression}`;
-            // 只有 Range Key 才需要这个 hack
+            
             if (keyExpression) {
-                q.KeyConditionExpression = `${keyExpression}`;
-                for (const key in keyValues) {
-                    const value = keyValues[key];
-                    if (typeof value !== "number") {
-                        throw new Error(`invalid value of ${key}: ${value}`);
-                    }
-                }
+                q.KeyConditionExpression = `${q.KeyConditionExpression} AND ${keyExpression}`;
                 q.ExpressionAttributeValues = { ...q.ExpressionAttributeValues, ...keyValues };
+            } else {
+                q.KeyConditionExpression = `${q.KeyConditionExpression} AND ${conditionExpression}`;
             }
         }
         sortedConditionsCount -= 1;
