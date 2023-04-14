@@ -33,8 +33,9 @@ type DynamoTableInfo<MODEL extends { [key: string]: any }> = DynamoKeyInfo<MODEL
 };
 
 type TableStoreKeyMap<MODEL extends { [key: string]: any }> = { [K in keyof MODEL]?: TableStoreTypeNode<MODEL[K]> };
+// dynamo 合并 key 的时候，用来 "/" 来合并。
 export const splitKey = "/";
-// dynamo 的 key 不能包含 '/'，支持'-'
+// dynamo 的 indexName 不能包含 '/'，支持'-'。
 const dynamoIndexKeySplit = "-";
 
 export function isGsiIndex<MODEL extends { [key: string]: any }>(
@@ -145,7 +146,7 @@ export class DynamoTable<MODEL extends { [key: string]: any }> {
         return {
             tableName: name,
             // [[a, b], c].join("/") 变成这样 a,b/c
-            indexName: [...combineHashKey.slice(0, 2), rangeKey].join(splitKey),
+            indexName: [...combineHashKey.slice(0, 2), rangeKey].join(dynamoIndexKeySplit),
             isGsi: true,
             isIndex: false,
             hashKey: combineHashKey.slice(0, 2).join(splitKey),
