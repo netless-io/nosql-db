@@ -409,7 +409,7 @@ export class DynamoAdapter<MODELS extends { [key: string]: { [key: string]: any 
         return new Promise((resolve, reject) => {
             this.client.send(command, (err: any, data: GetItemCommandOutput) => {
                 if (err) {
-                    console.error("getItem error from:", command);
+                    console.error("getItem error from:", command.input);
                     reject(err);
                 } else if (hasItemOutput(data)) {
                     resolve(data);
@@ -443,7 +443,7 @@ export class DynamoAdapter<MODELS extends { [key: string]: { [key: string]: any 
                 }
                 
             } catch (error) {
-                console.error("getItems error from:", command);
+                console.error("getItems error from:", command.input);
                 reject(error);
             }
         });
