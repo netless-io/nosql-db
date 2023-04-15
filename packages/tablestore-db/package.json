@@ -1,6 +1,6 @@
 {
   "name": "@netless/tablestore-dictionary-db",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.mjs",
   "types": "dist/index.d.ts",
