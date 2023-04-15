@@ -56,6 +56,15 @@ describe("read test", function (this: Suite): void {
                     });
                 });
             });
+            it(`test more than 3 pk in ${name}`, async (): Promise<void> => {
+                // 测试环境没有建这个表
+                // const appRoomSegments = db.model("appRoomSegments");
+                // await appRoomSegments.get.colume("teamId").equals("xxxxxxxx")
+                // .and.colume("appUUID").equals("xxxxx")
+                // .and.colume("segment").greaterOrEqualsThan(1672531200000).and.colume("segment").lessThan(1675119999999).slices(10000).resultSlices(async (slices) => {
+                //     console.log(slices);
+                // });
+            });
             it(`test one pk ${name}`, async (): Promise<void> => {
                 if (name !== "dynamodb") {
                     return;

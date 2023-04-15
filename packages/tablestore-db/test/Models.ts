@@ -11,6 +11,7 @@ export type TestModels = {
     readonly roomStates: RoomStatesModel;
     readonly sliceBegins: SliceBeginModel;
     readonly appStateDaySum: AppStateDaySum;
+    readonly appRoomSegments: AppRecordSegment;
 };
 
 export type AppStateDaySum = {
@@ -28,6 +29,16 @@ export type RoomModel = {
     readonly usersMaxCount: number;
     readonly rate: number;
     readonly createdAt: Date;
+};
+
+export type AppRecordSegment = {
+    readonly segment: number;
+    readonly host: string;
+    readonly duration: number;
+    readonly roomsCount: number;
+    readonly recordCount: number;
+    readonly teamId: string;
+    readonly appUUID: string;
 };
 
 export type SliceBeginModel = {
@@ -91,6 +102,19 @@ const modeDefinition: TableStoreModelDefinition<TestModels> = {
         columes: {
             "frameId": TableStoreType.integer,
             "createdAt": TableStoreType.integer,
+        },
+    },
+    "appRoomSegments": {
+        keys: {
+            teamId: TableStoreType.string,
+            appUUID: TableStoreType.string,
+            segment: TableStoreType.integer,
+            host: TableStoreType.string,
+        },
+        columes: {
+            duration: TableStoreType.integer,
+            roomsCount: TableStoreType.integer,
+            recordCount: TableStoreType.integer,
         },
     },
     // 这个数据库不存在，主要是为了测试 condition 操作逻辑
