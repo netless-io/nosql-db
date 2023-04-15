@@ -136,7 +136,7 @@ export class DynamoTable<MODEL extends { [key: string]: any }> {
         };
     }
 
-    // 当表结构中 keys 超过4个时。为了优化查询性能，额外会创建一个 前两个主键合为一个 key 的 pk，第三个做 sk 的 gsi。在提交数据时，也要创建合并 key 的数据。由于是主键，所以不会更改。
+    // 当表结构中 keys 超过4个时。为了优化查询性能，额外会创建一个 前两个主键合为一个 key 的 pk，第三个做 sk 的 gsi。其余数据用 Filter 来过滤。
     // eslint-disable-next-line max-len
     private combineGsiKeyInfo(name: string, combineHashKey: (keyof MODEL)[], rangeKey: keyof MODEL): DynamoGsiInfo<MODEL> {
         const valueNode: TableStoreKeyMap<MODEL> = {};
@@ -146,18 +146,18 @@ export class DynamoTable<MODEL extends { [key: string]: any }> {
         return {
             tableName: name,
             // [[a, b], c].join("/") 变成这样 a,b/c
-            indexName: [...combineHashKey.slice(0, 2), rangeKey].join(dynamoIndexKeySplit),
+            indexName: [...combineHashKey.slice(0, 3)].join(dynamoIndexKeySplit),
             isGsi: true,
             isIndex: false,
             hashKey: combineHashKey.slice(0, 2).join(splitKey),
-            rangeKey,
+            rangeKey: combineHashKey[2],
             combineHashKey,
             priority: 1,
             valueNode,
         };
     }
 
-    // 当表结构中 keys 超过两个时，生成一个，第一主键为 pk，第二主键做 sk 的 gsi
+    // 当表结构中 keys 超过两个时，生成一个，第一主键为 pk，第二主键做 sk 的 gsi，其余数据用 Filter 来过滤。在提交数据时，也要创建合并 key 的数据。由于是主键，所以不会更改。
     private normalGsiKeyInfo(name: string, keyMap: TableStoreKeyMap<MODEL>): DynamoGsiInfo<MODEL> {
         const keys = Object.keys(keyMap) as Array<keyof MODEL>;
         const combineHashKey = [...keys.slice(0, 1), ...keys.slice(2, keys.length)];
