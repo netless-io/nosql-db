@@ -232,36 +232,41 @@ function generateConditionExpression<MODEL extends { [key: string]: any }>(
     if (start && end && start !== end) {
         append = `#${ref} ${bigThan} :${ref}start AND #${ref} ${smallThan} :${ref}end`;
         q.names![`#${ref}`] = key;
-        q.values![`:${ref}start`] = tableStoreValueToDynamoAttr(start, struct);
-        q.values![`:${ref}end`] = tableStoreValueToDynamoAttr(end, struct);
+        
+        const refStart = tableStoreValueToDynamoAttr(start, struct);
+        const refEnd = tableStoreValueToDynamoAttr(end, struct);
+        q.values![`:${ref}start`] = refStart;
+        q.values![`:${ref}end`] = refEnd;
 
         // 如果是作为 key condition，不允许有多个条件语句，需要更改为 Between（包含两端），需要修改 start 和 end 的值
         {
             const keyExpression = `#${ref} BETWEEN :${ref}start AND :${ref}end`;
+            const keyValues: QueryCommandInput["ExpressionAttributeValues"] = {};
             if (bigThan === ">") {
-                if (typeof start === "number") {
-                    start = start + 1;
+                if (refStart.N) {
+                    const value = Number(refStart.N) + 1;
+                    keyValues[`:${ref}start`] = {
+                        N: value.toString(),
+                    }
                 } else {
-                    throw new Error(`only number support > for ${key}`);
+                    throw new Error(`only number support > for ${key}, but start is ${JSON.stringify(start)}`);
                 }
                 q.keyExpression = keyExpression;
             }
             if (smallThan === "<") {
-                if (typeof end === "number") {
-                    end = end - 1;
+                if (refEnd.N) {
+                    // end = end - 1;
+                    const value = Number(refEnd.N) - 1;
+                    keyValues[`:${ref}end`] = {
+                        N: value.toString(),
+                    }
                 } else {
-                    throw new Error(`only number support < for ${key}`);
+                    throw new Error(`only number support < for ${key}, but end is ${JSON.stringify(start)}`);
                 }
                 q.keyExpression = keyExpression;
             }
 
-            // 有代表需要修改 start 或者 end 的值
-            if (q.keyExpression) {
-                q.keyValues = {
-                    [`:${ref}start`]: tableStoreValueToDynamoAttr(start, struct),
-                    [`:${ref}end`]: tableStoreValueToDynamoAttr(end, struct),
-                };
-            }
+            q.keyValues = keyValues;
             q.keyExpression = keyExpression;
         }
 
