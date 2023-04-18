@@ -398,6 +398,7 @@ export class DynamoAdapter<MODELS extends { [key: string]: { [key: string]: any 
                 if (err.name === ConditionalCheckFailedException) {
                     resolve(false);
                 } else {
+                    console.error("sendCommand error from:", command.input);
                     reject(err);
                 }
             });
