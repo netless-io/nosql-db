@@ -99,7 +99,7 @@ export class DynamoTable<MODEL extends { [key: string]: any }> {
             tableName: name,
             hashKey: combinePkKeys.join(splitKey),
             rangeKey,
-            combineHashKey: combinePkKeys,
+            combineHashKey: Object.freeze(combinePkKeys),
             priority: 0,
             valueNode: inputModel.keys,
         };
@@ -151,7 +151,7 @@ export class DynamoTable<MODEL extends { [key: string]: any }> {
             isIndex: false,
             hashKey: combineHashKey.slice(0, 2).join(splitKey),
             rangeKey: combineHashKey[2],
-            combineHashKey,
+            combineHashKey: Object.freeze(combineHashKey),
             priority: 1,
             valueNode,
         };
@@ -172,7 +172,7 @@ export class DynamoTable<MODEL extends { [key: string]: any }> {
             isIndex: false,
             hashKey: keys[0] as string,
             rangeKey: keys[1] as string,
-            combineHashKey,
+            combineHashKey: Object.freeze(combineHashKey),
             priority: 2,
             valueNode,
         };
