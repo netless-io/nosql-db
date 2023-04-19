@@ -60,7 +60,7 @@ export function isTableIndex<MODEL extends { [key: string]: any }>(
 
 export class DynamoTable<MODEL extends { [key: string]: any }> {
 
-    private readonly tableInfo: Readonly<DynamoTableInfo<MODEL>>;
+    public readonly tableInfo: Readonly<DynamoTableInfo<MODEL>>;
     private readonly _keys: TableStoreKeyMap<MODEL>;
     private readonly _columns: TableStoreKeyMap<MODEL>;
     private readonly _patchableKeys: { readonly [K in keyof MODEL]: boolean };
