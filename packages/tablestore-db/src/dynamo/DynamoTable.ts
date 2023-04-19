@@ -6,14 +6,15 @@ import { tableStoreValueToDynamoAttr } from "./DynamoTransfer";
 import type { TableStoreModel, TableStoreTypeNode } from "../TableStoreType";
 
 export type DynamoKeyInfo<MODEL extends { [key: string]: any }> = {
-    tableName: string;
-    hashKey: string;
-    // 永远不在 combineHashKey 中
-    rangeKey?: keyof MODEL;
-    // 在 key info 中 hashKey 是 combineHashKey 数组合并的关系
-    combineHashKey: (keyof MODEL)[];
+    readonly tableName: string;
+    // dynamodb 中的 hash key，是由 combineHashKey 中的多个主键合并而成的，用 "/" 分割
+    readonly hashKey: string;
+    // dynamodb 中的 range key，不在 combineHashKey 中
+    readonly rangeKey?: keyof MODEL;
+    // 组成 hash key 的主键数组
+    readonly combineHashKey: readonly (keyof MODEL)[];
     priority: number;
-    valueNode: TableStoreKeyMap<MODEL>;
+    readonly valueNode: TableStoreKeyMap<MODEL>;
 };
 
 // DynamoGsiInfo 中的 combineHashKey 表示这个 index 支持的 key。而 hash key 是单主键或者两个主键的合并，前者包含，并且可能多与后者。不属于 hash key 和 range
@@ -35,7 +36,7 @@ type DynamoTableInfo<MODEL extends { [key: string]: any }> = DynamoKeyInfo<MODEL
 type TableStoreKeyMap<MODEL extends { [key: string]: any }> = { [K in keyof MODEL]?: TableStoreTypeNode<MODEL[K]> };
 // dynamo 合并 key 的时候，用来 "/" 来合并。
 export const splitKey = "/";
-// dynamo 的 indexName 不能包含 '/'，支持'-'。
+// dynamo 的 indexName 不能包含 '/'，使用'-'。
 const dynamoIndexKeySplit = "-";
 
 export function isGsiIndex<MODEL extends { [key: string]: any }>(
@@ -60,7 +61,7 @@ export function isTableIndex<MODEL extends { [key: string]: any }>(
 
 export class DynamoTable<MODEL extends { [key: string]: any }> {
 
-    public readonly tableInfo: Readonly<DynamoTableInfo<MODEL>>;
+    private readonly tableInfo: Readonly<DynamoTableInfo<MODEL>>;
     private readonly _keys: TableStoreKeyMap<MODEL>;
     private readonly _columns: TableStoreKeyMap<MODEL>;
     private readonly _patchableKeys: { readonly [K in keyof MODEL]: boolean };
@@ -138,14 +139,13 @@ export class DynamoTable<MODEL extends { [key: string]: any }> {
 
     // 当表结构中 keys 超过4个时。为了优化查询性能，额外会创建一个 前两个主键合为一个 key 的 pk，第三个做 sk 的 gsi。其余数据用 Filter 来过滤。
     // eslint-disable-next-line max-len
-    private combineGsiKeyInfo(name: string, combineHashKey: (keyof MODEL)[], rangeKey: keyof MODEL): DynamoGsiInfo<MODEL> {
+    private combineGsiKeyInfo(tableName: string, combineHashKey: (keyof MODEL)[], rangeKey: keyof MODEL): DynamoGsiInfo<MODEL> {
         const valueNode: TableStoreKeyMap<MODEL> = {};
         [...combineHashKey, rangeKey].forEach((key) => {
             valueNode[key] = this._keys[key] || this._columns[key];
         });
         return {
-            tableName: name,
-            // [[a, b], c].join("/") 变成这样 a,b/c
+            tableName: tableName,
             indexName: [...combineHashKey.slice(0, 3)].join(dynamoIndexKeySplit),
             isGsi: true,
             isIndex: false,
@@ -158,7 +158,7 @@ export class DynamoTable<MODEL extends { [key: string]: any }> {
     }
 
     // 当表结构中 keys 超过两个时，生成一个，第一主键为 pk，第二主键做 sk 的 gsi，其余数据用 Filter 来过滤。在提交数据时，也要创建合并 key 的数据。由于是主键，所以不会更改。
-    private normalGsiKeyInfo(name: string, keyMap: TableStoreKeyMap<MODEL>): DynamoGsiInfo<MODEL> {
+    private normalGsiKeyInfo(tableName: string, keyMap: TableStoreKeyMap<MODEL>): DynamoGsiInfo<MODEL> {
         const keys = Object.keys(keyMap) as Array<keyof MODEL>;
         const combineHashKey = [...keys.slice(0, 1), ...keys.slice(2, keys.length)];
         const valueNode: TableStoreKeyMap<MODEL> = {};
@@ -166,7 +166,7 @@ export class DynamoTable<MODEL extends { [key: string]: any }> {
             valueNode[key] = this._keys[key] || this._columns[key];
         });
         return {
-            tableName: name,
+            tableName: tableName,
             indexName: keys.slice(0, 2).join(dynamoIndexKeySplit),
             isGsi: true,
             isIndex: false,

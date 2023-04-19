@@ -26,7 +26,6 @@ import { addDeleteCommandCondition, parseColumns, parseConditionsToGetCommand,
          parseUpdateCommand } from "./DynamoParser";
 import type { TablestoreOptions } from "../tablestore/TablestoreAdapter";
 import { hasItemOutput,
-         hasItemsOutput,
          isQueryCommandInput,
          transformToModelArray,
          transformToModelObject,
