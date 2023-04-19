@@ -205,7 +205,6 @@ export class DynamoAdapter<MODELS extends { [key: string]: { [key: string]: any 
 
     public async create<M extends keyof MODELS>(tableName: M, target: MODELS[M], isOverride: boolean): Promise<boolean> {
         const tableNode = this.tableNodes[tableName];
-        console.log("create", tableName, JSON.stringify(target), JSON.stringify(tableNode.tableInfo), isOverride)
         const putCommand: PutItemCommandInput = parseTargetToPutCommand(target, tableNode, isOverride);
         return await this.sendCommand(new PutItemCommand(putCommand));
     }
