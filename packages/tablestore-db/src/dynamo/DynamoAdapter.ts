@@ -205,6 +205,7 @@ export class DynamoAdapter<MODELS extends { [key: string]: { [key: string]: any 
 
     public async create<M extends keyof MODELS>(tableName: M, target: MODELS[M], isOverride: boolean): Promise<boolean> {
         const tableNode = this.tableNodes[tableName];
+        console.log("create", tableName, JSON.stringify(target), isOverride)
         const putCommand: PutItemCommandInput = parseTargetToPutCommand(target, tableNode, isOverride);
         return await this.sendCommand(new PutItemCommand(putCommand));
     }
@@ -398,7 +399,7 @@ export class DynamoAdapter<MODELS extends { [key: string]: { [key: string]: any 
                 if (err.name === ConditionalCheckFailedException) {
                     resolve(false);
                 } else {
-                    console.error("sendCommand error from:", JSON.stringify(command.input));
+                    console.error("sendCommand error from:", JSON.stringify(command.constructor.name), JSON.stringify(command.input));
                     reject(err);
                 }
             });
