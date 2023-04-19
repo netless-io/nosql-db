@@ -172,6 +172,7 @@ export class DynamoTable<MODEL extends { [key: string]: any }> {
             isIndex: false,
             hashKey: keys[0] as string,
             rangeKey: keys[1] as string,
+            // TODO: 这里的 combineHashKey 有问题，需要改成 combineHashKey: 应该是 keys[0]，但是可能会导致其他问题，也许是 bug as feature，没有足够的单元测试，暂时不改。
             combineHashKey: Object.freeze(combineHashKey),
             priority: 2,
             valueNode,
