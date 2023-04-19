@@ -11,22 +11,7 @@ export class DynamoStoreLog {
             const fillStrings: string[] = [
                 methodName, params.TableName || "no table name",
             ];
-            if ((params as any).Key) {
-                fillStrings.push(JSON.stringify((params as any).Key));
-            }
-
-            if (params.ConditionalOperator) {
-                fillStrings.push(params.ConditionalOperator);
-            }
-
-            if (params.ExpressionAttributeNames) {
-                fillStrings.push(JSON.stringify(params.ExpressionAttributeNames));
-            }
-
-            if (params.ExpressionAttributeValues) {
-                // TODO: 是否需要处理隐私信息？
-                fillStrings.push(JSON.stringify(params.ExpressionAttributeValues));
-            }
+            fillStrings.push(JSON.stringify(params));
 
             this.printLog.apply(null, fillStrings);
 
