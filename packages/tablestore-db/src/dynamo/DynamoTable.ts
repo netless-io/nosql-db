@@ -319,7 +319,7 @@ export class DynamoTable<MODEL extends { [key: string]: any }> {
 
         // 原始主键里，会先将最后一个放到 hashKey 里，从 combineHashKey 里移除，所以这里只要查到三个，就说明原始表有 4 个 pk
         if (primaryKeyInfo.combineHashKey.length >= 3) {
-            const pks = this.combineHashKey.splice(0, 2);
+            const pks = this.combineHashKey.slice(0, 2);
             const pkValue = [];
             for (const value of pks) {
                 pkValue.push(target[value]);
