@@ -118,7 +118,7 @@ function createTableStoreType(): TableStoreTypeDefinition {
                 const index = enumList.indexOf(value);
 
                 if (index === -1) {
-                    throw new Error(`unrecognized enum "${value}" in ${JSON.stringify(enumList)}`);
+                    throw new Error(`unrecognized enum "${JSON.stringify(value)}" in ${JSON.stringify(enumList)}`);
                 }
                 return TableStore.Long.fromNumber(index);
             },
@@ -133,10 +133,11 @@ function createTableStoreType(): TableStoreTypeDefinition {
                 } else {
                     index = value;
                 }
-                const enumValue = enumList[index];
+                // 之前的版本，创建数据时，enum 以 string 存储，更新时修正成了 number，这里做一下兼容
+                const enumValue = enumList[index] || enumList[value];
 
                 if (enumValue === undefined) {
-                    throw new Error(`unrecognized enum index ${index} for value ${value} in ${JSON.stringify(enumList)}`);
+                    throw new Error(`unrecognized enum index ${index} for value ${JSON.stringify(value)} in ${JSON.stringify(enumList)} and value index: ${enumList[value]}`);
                 }
                 return enumValue;
             },
