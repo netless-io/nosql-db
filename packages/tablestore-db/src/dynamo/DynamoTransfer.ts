@@ -88,7 +88,7 @@ export function tableStoreValueFromDynamoAttr<T extends any>(value: AttributeVal
         { return value.S as any; }
         case "enums":
         { 
-            if (value.N) {
+            if (value.N !== undefined) {
                 return Number(value.N) as any;
             }
             return value.S as any;
@@ -126,7 +126,7 @@ export function tableStoreValueFromDynamoAttr<T extends any>(value: AttributeVal
             if (value.N === undefined && value.S === undefined) {
                 return null as any;
             }
-            if (value.N) {
+            if (value.N != undefined) {
                 return Number(value.N) as any;
             }
             return value.S as any;
