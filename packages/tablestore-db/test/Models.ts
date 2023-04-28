@@ -221,7 +221,9 @@ const db: Database<TestModels> = new Database(new DatabaseAdapterFactory<TestMod
 
 const db2: Database<TestModels> = new Database(new DatabaseAdapterFactory<TestModels>(modeDefinition).create({
     // will load from ~/.aws/credentials and ~/.aws/config。just keep dynamodb field is ok
-    dynamodb: {},
+    dynamodb: {
+        region: "ap-northeast-1",
+    },
 }));
 
 export const databaseSet = { dynamodb: db2 };
