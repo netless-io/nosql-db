@@ -233,8 +233,8 @@ function generateConditionExpression<MODEL extends { [key: string]: any }>(
         append = `#${ref} ${bigThan} :${ref}start AND #${ref} ${smallThan} :${ref}end`;
         q.names![`#${ref}`] = key;
         
-        const refStart = tableStoreValueToDynamoAttr(start, struct);
-        const refEnd = tableStoreValueToDynamoAttr(end, struct);
+        const refStart = tableStoreValueToDynamoAttr(start);
+        const refEnd = tableStoreValueToDynamoAttr(end);
         q.values![`:${ref}start`] = refStart;
         q.values![`:${ref}end`] = refEnd;
 
@@ -273,15 +273,15 @@ function generateConditionExpression<MODEL extends { [key: string]: any }>(
     } else if (start && end) {
         append = `#${ref} = :${ref}start`;
         q.names![`#${ref}`] = key;
-        q.values![`:${ref}start`] = tableStoreValueToDynamoAttr(start, struct);
+        q.values![`:${ref}start`] = tableStoreValueToDynamoAttr(start);
     } else if (start) {
         append = `#${ref} ${bigThan} :${ref}start`;
         q.names![`#${ref}`] = key;
-        q.values![`:${ref}start`] = tableStoreValueToDynamoAttr(start, struct);
+        q.values![`:${ref}start`] = tableStoreValueToDynamoAttr(start);
     } else if (end) {
         append = `#${ref} ${smallThan} :${ref}end`;
         q.names![`#${ref}`] = key;
-        q.values![`:${ref}end`] = tableStoreValueToDynamoAttr(end, struct);
+        q.values![`:${ref}end`] = tableStoreValueToDynamoAttr(end);
     }
     q.conditionExpression = append;
     return q;

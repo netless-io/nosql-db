@@ -301,7 +301,8 @@ export class DynamoTable<MODEL extends { [key: string]: any }> {
                 // 保持和旧的报错一致
                 throw new Error(`unexpect colume name ${key}`);
             }
-            result[key] = tableStoreValueToDynamoAttr(target[key], struct);
+            const tableValue = struct.toTableStoreValue(target[key]);
+            result[key] = tableStoreValueToDynamoAttr(tableValue);
         }
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -168,7 +168,7 @@ export function tableStoreValueToDynamoType(value: any): "S" | "N" | "B" | "BOOL
 }
 
 // 已经是 tablestore 存储时候的值了，只需要对 number 做处理就可以了
-export function tableStoreValueToDynamoAttr(value: any, keyStruct: TableStoreTypeNode<any>): AttributeValue {
+export function tableStoreValueToDynamoAttr(value: any): AttributeValue {
     const type = tableStoreValueToDynamoType(value);
     switch (type) {
         case "S":
