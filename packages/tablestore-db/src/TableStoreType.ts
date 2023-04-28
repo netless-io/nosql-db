@@ -118,7 +118,7 @@ function createTableStoreType(): TableStoreTypeDefinition {
                 const index = enumList.indexOf(value);
 
                 if (index === -1) {
-                    throw new Error(`unrecognized enum "${value}"`);
+                    throw new Error(`unrecognized enum "${value}" in ${JSON.stringify(enumList)}`);
                 }
                 return TableStore.Long.fromNumber(index);
             },
