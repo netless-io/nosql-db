@@ -126,8 +126,12 @@ function createTableStoreType(): TableStoreTypeDefinition {
                 let index: number;
                 if (typeof value === "number") {
                     index = value;
-                } else {
+                } else if (value.toNumber) {
                     index = value.toNumber();
+                } else if (typeof value === "string") {
+                    index = enumList.indexOf(value as any);
+                } else {
+                    index = value;
                 }
                 const enumValue = enumList[index];
 

@@ -20,11 +20,11 @@ export function transformToModelObject<MODEL extends { [key: string]: any }>(
     const item = output.Item;
     const result: { [key: string]: any } = {};
     for (const [key, keyStruct] of Object.entries(table.keys)) {
-        const value = valueFromDynamoAttr(item[key], keyStruct!);
+        const value = tableStoreValueFromDynamoAttr(item[key], keyStruct!);
         result[key] = keyStruct.fromTableStoreValue(value);
     }
     for (const [column, struct] of Object.entries(table.columes)) {
-        const value = valueFromDynamoAttr(item[column], struct!);
+        const value = tableStoreValueFromDynamoAttr(item[column], struct!);
         result[column] = struct.fromTableStoreValue(value);
     }
     return result as MODEL;
@@ -40,11 +40,11 @@ export function transformToModelArray<MODEL extends { [key: string]: any }>(
     return (output.Items.map((item) => {
         const result: { [key: string]: any } = {};
         for (const [key, keyStruct] of Object.entries(table.keys)) {
-            const value = valueFromDynamoAttr(item[key], keyStruct!);
+            const value = tableStoreValueFromDynamoAttr(item[key], keyStruct!);
             result[key] = keyStruct.fromTableStoreValue(value);
         }
         for (const [column, struct] of Object.entries(table.columes)) {
-            const value = valueFromDynamoAttr(item[column], struct!);
+            const value = tableStoreValueFromDynamoAttr(item[column], struct!);
             result[column] = struct.fromTableStoreValue(value);
         }
         return result;
@@ -69,7 +69,7 @@ export function isQueryCommandInput(input: QueryCommandInput | ScanCommandInput)
 
 // 主要是为了处理 float,integer,enum 相关类型，他们虽然是 N，但是在 DynamoDB 返回和存储时，都是以 String 存储的，需要用 Number 处理一遍再返回结果
 // eslint-disable-next-line max-len
-export function valueFromDynamoAttr<T extends any>(value: AttributeValue | undefined, struct: TableStoreTypeNode<T>): T {
+export function tableStoreValueFromDynamoAttr<T extends any>(value: AttributeValue | undefined, struct: TableStoreTypeNode<T>): T {
     if (value === undefined) {
         return null as any;
     }
@@ -87,8 +87,12 @@ export function valueFromDynamoAttr<T extends any>(value: AttributeValue | undef
         case "date":
         { return value.S as any; }
         case "enums":
-        // FIXME: 这里应该是 N，但是有些地方存成了 S，先 workaround，后面修
-        { return Number(value.N || value.S) as any; }
+        { 
+            if (value.N) {
+                return Number(value.N) as any;
+            }
+            return value.S as any;
+        }
         case "booleanOptional":
         {
             if (value.BOOL === undefined) {
@@ -122,7 +126,10 @@ export function valueFromDynamoAttr<T extends any>(value: AttributeValue | undef
             if (value.N === undefined && value.S === undefined) {
                 return null as any;
             }
-            return Number(value.N || value.S) as any;
+            if (value.N) {
+                return Number(value.N) as any;
+            }
+            return value.S as any;
         }
         case "floatOptional":
         case "integerOptional":
