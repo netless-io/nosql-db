@@ -28,7 +28,6 @@ describe("index test", function (this: Suite): void {
                     teamUUID: "001",
                     isBan: false,
                     createdAt: currentDate,
-                    state: RecordState.Active,
                 });
                 await accessDB.post({
                     ak: "AK-2",
@@ -37,7 +36,6 @@ describe("index test", function (this: Suite): void {
                     teamUUID: "002",
                     isBan: false,
                     createdAt: currentDate,
-                    state: RecordState.Active,
                 });
                 await accessDB.post({
                     ak: "AK-3",
@@ -46,7 +44,6 @@ describe("index test", function (this: Suite): void {
                     teamUUID: "001",
                     isBan: false,
                     createdAt: currentDate,
-                    state: RecordState.Active,
                 });
 
                 expect(await accessDB.get.colume("ak").equals("AK-1").result()).deep.equals({
@@ -56,7 +53,6 @@ describe("index test", function (this: Suite): void {
                     teamUUID: "001",
                     isBan: false,
                     createdAt: currentDate,
-                    state: RecordState.Active,
                 });
                 expect(await accessDB.get.colume("teamUUID").equals("001").result()).deep.equals({
                     ak: "AK-1",
@@ -65,7 +61,6 @@ describe("index test", function (this: Suite): void {
                     teamUUID: "001",
                     isBan: false,
                     createdAt: currentDate,
-                    state: RecordState.Active,
                 });
                 expect(await accessDB.get.colume("teamUUID").equals("001").results()).deep.equals([
                     {
@@ -75,7 +70,6 @@ describe("index test", function (this: Suite): void {
                         teamUUID: "001",
                         isBan: false,
                         createdAt: currentDate,
-                        state: RecordState.Active,
                     },
                     {
                         ak: "AK-3",
@@ -84,7 +78,6 @@ describe("index test", function (this: Suite): void {
                         teamUUID: "001",
                         isBan: false,
                         createdAt: currentDate,
-                        state: RecordState.Active,
                     },
                 ]);
                 const results: AccessKeyModel[] = [];

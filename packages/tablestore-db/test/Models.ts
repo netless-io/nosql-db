@@ -78,7 +78,6 @@ export type AccessKeyModel = {
     readonly teamUUID: string;
     readonly isBan: boolean;
     readonly createdAt: Date;
-    readonly state: RecordState;
 };
 
 export type AppModel = {
@@ -163,7 +162,6 @@ const modeDefinition: TableStoreModelDefinition<TestModels> = {
             "appUUID": TableStoreType.string,
             "teamUUID": TableStoreType.string,
             "isBan": TableStoreType.boolean,
-            "state": TableStoreType.enums([RecordState.Active, RecordState.Deleted]),
             "createdAt": TableStoreType.date,
         },
         indexes: {

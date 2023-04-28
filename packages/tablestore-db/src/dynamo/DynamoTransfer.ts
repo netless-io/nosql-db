@@ -152,7 +152,7 @@ export function tableStoreValueFromDynamoAttr<T extends any>(value: AttributeVal
 // value 可能传 null，这个时候传给 DynamoDB 的应该是 null（其实不传也行），dynamo 的 attribute 这个时候要传的是 { NULL: true }，primary keys 不能传 null；
 // 但是普通 model 变换应该要用 tableStoreValueToDynamoAttr 来处理成 dynamo 对象
 export function tableStoreValueToDynamoType(value: any): "S" | "N" | "B" | "BOOL" | "NULL" {
-    if (value === undefined) {
+    if (value === undefined || value === null) {
         return "NULL";
     } else if (typeof value === "string") {
         return "S";
