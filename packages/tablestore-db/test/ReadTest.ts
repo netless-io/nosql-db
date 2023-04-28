@@ -13,11 +13,13 @@ describe("read test", function (this: Suite): void {
     describe("different db", (): void => {
         for (const [name, db] of Object.entries(databaseSet)) {
             it(`test ${name}`, async (): Promise<void> => {
-                await db.model("apps").get.colume("teamUUID").equals("195")
-                .and.colume("state").equals(RecordState.Active)
-                .results();
+                await expectError("Requested resource not found", async () => {
+                    await db.model("apps").get.colume("teamUUID").equals("195")
+                    .and.colume("state").equals(RecordState.Active)
+                    .results();
+                })
             });
-            // dynamodb 不支持 sk 多条件查询，>= 和 <= 同时存在时，可以暂时使用 between 替代。
+            // dynamodb 不支持 sk 多条件查询；>= 和 <= 同时存在时，可以暂时使用 between 替代，其他需要对start end 进行加减
             it(`test multiple condition for sk ${name}`, async (): Promise<void> => {
                 const appStateDaySum = db.model("appStateDaySum");
                 const sums: any[] = [];
