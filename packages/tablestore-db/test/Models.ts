@@ -12,6 +12,7 @@ export type TestModels = {
     readonly sliceBegins: SliceBeginModel;
     readonly appStateDaySum: AppStateDaySum;
     readonly appRoomSegments: AppRecordSegment;
+    readonly apps: AppModel;
 };
 
 export type AppStateDaySum = {
@@ -78,6 +79,19 @@ export type AccessKeyModel = {
     readonly isBan: boolean;
     readonly createdAt: Date;
 };
+
+export type AppModel = {
+    readonly uuid: string;
+    readonly teamUUID: string;
+    readonly name: string;
+    readonly state: RecordState;
+    readonly createdAt: Date;
+};
+
+export enum RecordState {
+    Active = "active",
+    Deleted = "deleted",
+}
 
 const modeDefinition: TableStoreModelDefinition<TestModels> = {
     "rooms": {
@@ -171,6 +185,20 @@ const modeDefinition: TableStoreModelDefinition<TestModels> = {
         columes: {
             "peakSessionsCount": TableStoreType.integer,
             "peakWritersCount": TableStoreType.integer,
+        },
+    },
+    apps: {
+        keys: {
+            "teamUUID": TableStoreType.string,
+            "uuid": TableStoreType.string,
+        },
+        columes: {
+            "name": TableStoreType.string,
+            "state": TableStoreType.enums([RecordState.Active, RecordState.Deleted]),
+            "createdAt": TableStoreType.date,
+        },
+        indexes: {
+            "apps_state_index": ["teamUUID", "state", "uuid"],
         },
     },
 };

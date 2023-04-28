@@ -2,7 +2,7 @@ import chaiAsPromised from "chai-as-promised";
 
 import type { Suite } from "mocha";
 import { expect, assert, use } from "chai";
-import { databaseSet } from "./Models";
+import { RecordState, databaseSet } from "./Models";
 import { expectError } from "./ExceptError";
 
 use(chaiAsPromised);
@@ -12,6 +12,11 @@ describe("read test", function (this: Suite): void {
     this.timeout(10 * 60 * 1000);
     describe("different db", (): void => {
         for (const [name, db] of Object.entries(databaseSet)) {
+            it(`test ${name}`, async (): Promise<void> => {
+                await db.model("apps").get.colume("teamUUID").equals("195")
+                .and.colume("state").equals(RecordState.Active)
+                .results();
+            });
             // dynamodb 不支持 sk 多条件查询，>= 和 <= 同时存在时，可以暂时使用 between 替代。
             it(`test multiple condition for sk ${name}`, async (): Promise<void> => {
                 const appStateDaySum = db.model("appStateDaySum");

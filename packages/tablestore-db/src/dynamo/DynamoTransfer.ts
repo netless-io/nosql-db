@@ -160,26 +160,34 @@ export function tableStoreValueToDynamoType(value: any): "S" | "N" | "B" | "BOOL
     return "S";
 }
 
+// 已经是 tablestore 存储时候的值了，只需要对 number 做处理就可以了
 export function tableStoreValueToDynamoAttr(value: any, keyStruct: TableStoreTypeNode<any>): AttributeValue {
     const type = tableStoreValueToDynamoType(value);
-    // 先转成在 tablestore 存储的数据结构，再转成 dynamo 的数据结构
-    let primaryValue = keyStruct.toTableStoreValue(value);
-    // tablestore 存数字时，使用的是 tablestore.Long，需要调用 toNumber 转成基础类型
-    if (primaryValue && primaryValue.toNumber) {
-        primaryValue = primaryValue.toNumber();
-    }
     switch (type) {
         case "S":
-        { return { S: primaryValue.toString() }; }
+        {
+            return { S: value }; 
+        }
         case "N":
-        { return { N: primaryValue.toString() }; }
+        { 
+            if (value.toNumber) {
+                return { N: value.toNumber().toString() };
+            }
+            return { N: value.toString() }; 
+        }
         case "BOOL":
-        { return { BOOL: !!primaryValue }; }
+        { 
+            return { BOOL: !!value }; 
+        }
         case "B":
-        { return { B: primaryValue }; }
+        { 
+            return { B: value }; 
+        }
         case "NULL":
-        { return { NULL: true }; }
+        { 
+            return { NULL: true }; 
+        }
     }
     // for eslint
-    return { S: primaryValue.toString() };
+    return { S: value.toString() };
 }
