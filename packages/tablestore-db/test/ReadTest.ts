@@ -12,6 +12,9 @@ describe("read test", function (this: Suite): void {
     this.timeout(10 * 60 * 1000);
     describe("different db", (): void => {
         for (const [name, db] of Object.entries(databaseSet)) {
+            it(`test accessKeys enums in ${name}`, async (): Promise<void> => {
+                await db.model("accessKeys").get.colume("ak").equals("accessKey").result();
+            });
             it(`test ${name}`, async (): Promise<void> => {
                 await expectError("Requested resource not found", async () => {
                     await db.model("apps").get.colume("teamUUID").equals("195")
