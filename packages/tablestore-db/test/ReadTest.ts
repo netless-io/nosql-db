@@ -26,6 +26,10 @@ describe("read test", function (this: Suite): void {
             it(`test multiple condition for sk ${name}`, async (): Promise<void> => {
                 const appStateDaySum = db.model("appStateDaySum");
                 const sums: any[] = [];
+                if (name == "tablestore") {
+                    // tablestore 不需要做这个检测
+                    return;
+                }
                 // 没创建表时，这里涉及到的检查，只需要格式正确即可，不需要检查是否存在
                 await expectError("Requested resource not found", async () => {
                     await appStateDaySum.get.colume("teamId").equals("xxxxxxxx")
