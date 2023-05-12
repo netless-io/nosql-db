@@ -220,10 +220,14 @@ const db: Database<TestModels> = new Database(new DatabaseAdapterFactory<TestMod
 }));
 
 const db2: Database<TestModels> = new Database(new DatabaseAdapterFactory<TestModels>(modeDefinition).create({
-    // will load from ~/.aws/credentials and ~/.aws/config。just keep dynamodb field is ok
     dynamodb: {
-        region: "ap-northeast-1",
+        // comment all below will load from ~/.aws/credentials and ~/.aws/config。just keep dynamodb field is ok
+        region: process.env.DYNAMODB_REGION!,
+        credentials: {
+            accessKeyId: process.env.DYNAMODB_AK!,
+            secretAccessKey: process.env.DYNAMODB_SK!,
+        },
     },
 }));
 
-export const databaseSet = { dynamodb: db2 };
+export const databaseSet = { dynamodb: db2, tablestore: db };
