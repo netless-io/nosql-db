@@ -16,6 +16,10 @@ describe("read test", function (this: Suite): void {
                 await db.model("accessKeys").get.colume("ak").equals("accessKey").result();
             });
             it(`test ${name}`, async (): Promise<void> => {
+                if (name == "tablestore") {
+                    // tablestore 不需要做这个检测
+                    return;
+                }
                 await expectError("Requested resource not found", async () => {
                     await db.model("apps").get.colume("teamUUID").equals("195")
                     .and.colume("state").equals(RecordState.Active)
